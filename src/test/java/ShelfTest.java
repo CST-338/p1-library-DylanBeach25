@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
-/*
+
 class ShelfTest {
     Shelf shelf;
     Shelf shelf1;
@@ -169,4 +169,3 @@ class ShelfTest {
     }
 }
 
- */
