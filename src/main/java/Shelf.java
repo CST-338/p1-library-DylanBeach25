@@ -10,7 +10,6 @@
 import Utilities.Code;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 public class Shelf {
@@ -21,10 +20,10 @@ public class Shelf {
     public static final int SUBJECT_ = 1;
     /**
      * books is a hashmap that has Book object as a key, and a quantity of that
-     * book as an Integer value stored under the Book Key
+     * book as an Integer value stored under the Book Key. It is instantiated here to avoid
+     * a null pointer exception
      */
-    private HashMap<Book, Integer> books;
-            //= new HashMap<Book,Integer>();
+    private HashMap<Book, Integer> books = new HashMap<Book,Integer>();
     /**
      * This int is used to represent the number of the shelf
      */
@@ -36,23 +35,20 @@ public class Shelf {
     private String subject;
 
     /**
-     * Deprecated constructor, will be phased out later, instantiates
-     * the hashmap books so it won't throw a nullpointer exception
+     * Deprecated constructor, will be phased out later
      */
     public Shelf() {
-        books = new HashMap<Book, Integer>();
+
     }
 
     /**
      * Paramaeterized constructor, instantuates shelfNumber subject to the parameters
-     * and instantiates books to a new Hashmap<Book,Integer></Book,Integer>
      * @param shelfNumber
      * @param subject
      */
     public Shelf(int shelfNumber, String subject) {
         this.shelfNumber = shelfNumber;
         this.subject = subject;
-        books = new HashMap<Book, Integer>();
     }
 
     /**
