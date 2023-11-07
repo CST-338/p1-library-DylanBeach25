@@ -37,6 +37,7 @@ public class Shelf {
     /**
      * Deprecated constructor, will be phased out later
      */
+    @Deprecated
     public Shelf() {
 
     }
