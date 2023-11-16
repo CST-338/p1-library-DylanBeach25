@@ -6,6 +6,7 @@
 
 import Utilities.Code;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
@@ -113,68 +114,55 @@ public class Library {
   public int listBooks() {
     int bookTotal = 0;
     for (String s : shelves.keySet()) {
-      for(Book b : shelves.get(s).getBooks().keySet())
-      {
+      for (Book b : shelves.get(s).getBooks().keySet()) {
         bookTotal = bookTotal + shelves.get(s).getBookCount(b);
       }
       shelves.get(s).listBooks();
     }
-    for(Book b:books.keySet())
-    {
+    for (Book b : books.keySet()) {
       System.out.println("Not implemented yet");
     }
     //System.out.println("Not yet implemented");
     return bookTotal;
   }
 
-  public Code checkoutBook(Reader reader, Book book)
-  {
-    if(!readers.contains(reader))
-    {
+  public Code checkoutBook(Reader reader, Book book) {
+    if (!readers.contains(reader)) {
       System.out.println(reader.getName() + " doesn't have an account here");
       return Code.READER_NOT_IN_LIBRARY_ERROR;
     }
-    if(reader.getBooks().size()>LENDING_LIMIT)
-    {
+    if (reader.getBooks().size() > LENDING_LIMIT) {
       System.out.println(reader.getName() + " has reached the lending limit, " + LENDING_LIMIT);
       return Code.BOOK_LIMIT_REACHED_ERROR;
     }
-    if(!books.containsKey(book))
-    {
+    if (!books.containsKey(book)) {
       System.out.println("ERROR: could not find " + book.getTitle());
       return Code.BOOK_NOT_IN_INVENTORY_ERROR;
     }
-    if(!shelves.containsKey(book.getSubject()))
-    {
+    if (!shelves.containsKey(book.getSubject())) {
       System.out.println("no shelf for " + book.getSubject() + " books!");
       return Code.SHELF_EXISTS_ERROR;
     } else {
-      if(shelves.get(book.getSubject()).getBookCount(book) < 1)
-      {
+      if (shelves.get(book.getSubject()).getBookCount(book) < 1) {
         System.out.println("ERROR: no copies of " + book + " remain");
         return Code.BOOK_NOT_IN_INVENTORY_ERROR;
       }
     }
     Code holder = reader.addBook(book);
-    if(!holder.equals(Code.SUCCESS))
-    {
+    if (!holder.equals(Code.SUCCESS)) {
       System.out.println("Couldn't checkout " + book);
       return holder;
     }
     Code holder2 = shelves.get(book.getSubject()).removeBook(book);
-    if(holder2.equals(Code.SUCCESS))
-    {
+    if (holder2.equals(Code.SUCCESS)) {
       System.out.println(book + " checked out successfully");
     }
     return holder2;
   }
 
-  public Book getBookByISBN(String isbn)
-  {
-    for(Book b : books.keySet())
-    {
-      if(b.getISBN().equals(isbn))
-      {
+  public Book getBookByISBN(String isbn) {
+    for (Book b : books.keySet()) {
+      if (b.getISBN().equals(isbn)) {
         return b;
       }
     }
@@ -182,25 +170,20 @@ public class Library {
     return null;
   }
 
-  public int listShelves()
-  {
+  public int listShelves() {
     //listShelves(boolean) not yet implemented
     return listShelves(false);
   }
 
-  public int listShelves(boolean showbooks)
-  {
+  public int listShelves(boolean showbooks) {
     int shelfCounter = 0;
-    if(showbooks)
-    {
-      for(String s : shelves.keySet())
-      {
+    if (showbooks) {
+      for (String s : shelves.keySet()) {
         shelves.get(s).listBooks();
         shelfCounter = shelfCounter + 1;
       }
     } else {
-      for(String s : shelves.keySet())
-      {
+      for (String s : shelves.keySet()) {
         System.out.println(shelves.get(s).toString());
         shelfCounter = shelfCounter + 1;
       }
@@ -208,64 +191,181 @@ public class Library {
     return shelfCounter;
   }
 
-  public Code addShelf(String shelfSubject)
-  {
-    Shelf shelf = new Shelf(shelves.size()+1,shelfSubject);
+  public Code addShelf(String shelfSubject) {
+    Shelf shelf = new Shelf(shelves.size() + 1, shelfSubject);
     return addShelf(shelf);
   }
 
-  public Code addShelf(Shelf shelf)
-  {
-    if(shelves.containsValue(shelf))
-    {
+  public Code addShelf(Shelf shelf) {
+    if (shelves.containsValue(shelf)) {
       System.out.println("ERROR: Shelf already exists " + shelf);
       return Code.SHELF_EXISTS_ERROR;
     }
-    shelf.setShelfNumber(shelves.size()+1);
-    shelves.put(shelf.getSubject(),shelf);
-    for(Book b : books.keySet())
-    {
-      if(b.getSubject().equals(shelves.get(shelf.getSubject()).getSubject()))
-      {
+    shelf.setShelfNumber(shelves.size() + 1);
+    shelves.put(shelf.getSubject(), shelf);
+    for (Book b : books.keySet()) {
+      if (b.getSubject().equals(shelves.get(shelf.getSubject()).getSubject())) {
         shelves.get(shelf.getSubject()).addBook(b);
       }
     }
     return Code.SUCCESS;
   }
 
-public Shelf getShelf(Integer shelfNumber)
-{
-  for(String s : shelves.keySet())
-  {
-    if(Integer.valueOf(shelves.get(s).getShelfNumber()).equals(shelfNumber))
-    {
-      return shelves.get(s);
+  public Shelf getShelf(Integer shelfNumber) {
+    for (String s : shelves.keySet()) {
+      if (Integer.valueOf(shelves.get(s).getShelfNumber()).equals(shelfNumber)) {
+        return shelves.get(s);
+      }
     }
-  }
-  System.out.println("No shelf number " + shelfNumber + " found");
-  return null;
-}
-
-public Shelf getShelf(String subject)
-{
-  if(shelves.containsKey(subject))
-  {
-    return shelves.get(subject);
-  } else {
-    System.out.println("No shelf for " + subject + "books");
+    System.out.println("No shelf number " + shelfNumber + " found");
     return null;
   }
-}
 
-public int listReaders()
-{
-  int totalReaders = 0;
-  for (Reader r: readers)
-  {
-    System.out.println(r.toString());
-    totalReaders = totalReaders + 1;
+  public Shelf getShelf(String subject) {
+    if (shelves.containsKey(subject)) {
+      return shelves.get(subject);
+    } else {
+      System.out.println("No shelf for " + subject + "books");
+      return null;
+    }
   }
-  return totalReaders;
-}
+
+  public int listReaders() {
+    int totalReaders = 0;
+    for (Reader r : readers) {
+      System.out.println(r.toString());
+      totalReaders = totalReaders + 1;
+    }
+    return totalReaders;
+  }
+
+  public int listReaders(boolean showBooks) {
+    int totalReaders = 0;
+    if (showBooks) {
+      for (Reader r : readers) {
+        totalReaders = totalReaders + 1;
+        System.out.println(r.getName() + "(#" + readers.indexOf(r) + 1 + ") has the following books: ");
+        for (Book b : r.getBooks()) {
+          System.out.println(b.toString());
+        }
+      }
+      return totalReaders;
+    } else {
+      for (Reader r : readers) {
+        totalReaders = totalReaders + 1;
+        System.out.println(r.toString());
+      }
+      return totalReaders;
+    }
+  }
+
+  public Reader getReaderByCard(int cardNumber) {
+    for (Reader r : readers) {
+      if (r.getCardNumber() == cardNumber) {
+        return r;
+      }
+    }
+    System.out.println("Could not find a reader with card #" + cardNumber);
+    return null;
+  }
+
+  public Code addReader(Reader reader) {
+    if (readers.contains(reader)) {
+      System.out.println(reader.getName() + " already has an account!");
+      return Code.READER_ALREADY_EXISTS_ERROR;
+    }
+    for (Reader r : readers) {
+      if (reader.getCardNumber() == r.getCardNumber()) {
+        System.out.println(r.getName() + " and " + reader.getName() + " have the same card number!");
+        return Code.READER_CARD_NUMBER_ERROR;
+      }
+    }
+    readers.add(reader);
+    System.out.println(reader.getName() + " added to the library!");
+    if (reader.getCardNumber() > libraryCard) {
+      libraryCard = reader.getCardNumber();
+    }
+    return Code.SUCCESS;
+  }
+
+  public Code removeReader(Reader reader) {
+    if (!reader.getBooks().isEmpty()) {
+      System.out.println(reader.getName() + " must return all books!");
+      return Code.READER_STILL_HAS_BOOKS_ERROR;
+    }
+    if (!readers.contains(reader)) {
+      System.out.println(reader.getName() + " is not part of this Library");
+      return Code.READER_NOT_IN_LIBRARY_ERROR;
+    }
+    readers.remove(reader);
+    return Code.SUCCESS;
+  }
+
+  public static int convertInt(String recordCountString, Code code) {
+    int convertedString;
+    try {
+      convertedString = Integer.parseInt(recordCountString);
+    } catch (NumberFormatException e) {
+      if (code.equals(Code.BOOK_COUNT_ERROR)) {
+        System.out.println("Value which caused the error: " + recordCountString);
+        System.out.println("Error: Could not read number of books");
+        return Code.BOOK_COUNT_ERROR.getCode();
+      } else if (code.equals(Code.PAGE_COUNT_ERROR)) {
+        System.out.println("Value which caused the error: " + recordCountString);
+        System.out.println("Error: Could not parse page count");
+        return Code.PAGE_COUNT_ERROR.getCode();
+      } else if (code.equals(Code.DATE_CONVERSION_ERROR)) {
+        System.out.println("Value which caused the error: " + recordCountString);
+        System.out.println("Error: Could not parse date component");
+        return Code.DATE_CONVERSION_ERROR.getCode();
+      } else {
+        System.out.println("Value which caused the error: " + recordCountString);
+        System.out.println("Error: Unknown conversion error");
+        return Code.UNKNOWN_ERROR.getCode();
+      }
+    }
+    return convertedString;
+  }
+
+  public static LocalDate convertDate(String date, Code errorCode)
+  {
+    LocalDate localDate;
+    String[] words = date.split("-");
+    if(words.length != 3)
+    {
+      System.out.println("Error: date conversion error, could not parse " + date);
+      System.out.println("Using default date (01-jan-1970)");
+      localDate = LocalDate.parse("1970-01-01");
+      return localDate;
+    }
+    if(words[0].length() < 0 || words[1].length()<0 || words[2].length()<0)
+    {
+      System.out.println("Error converting date: Year " + words[0]);
+      System.out.println("Error converting date: Month " + words[1]);
+      System.out.println("Error converting date: Day " + words[2]);
+      System.out.println("Using default date (01-jan-1970)");
+      localDate = LocalDate.parse("1970-01-01");
+      return localDate;
+    }
+    localDate = LocalDate.parse(date);
+    return localDate;
+  }
+
+  public int getLibraryCardNumber()
+  {
+    return libraryCard+1;
+  }
+
+  private Code errorCode(int codeNumber)
+  {
+    for(Code code : Code.values())
+    {
+      if(code.getCode() == codeNumber) {
+        return code;
+      }
+    }
+    return Code.UNKNOWN_ERROR;
+  }
+
 
 }
