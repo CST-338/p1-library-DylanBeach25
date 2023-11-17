@@ -5,6 +5,7 @@ public enum Code {
     /**
      * The following codes are returned based on condition in the library project.
      */
+    BOOK_RECORD_COUNT_ERROR(-24,"The count of records for the book doesn't make sense"),
     SUCCESS(0, "Transaction was a success"),
     FILE_NOT_FOUND_ERROR(-1, "Could not the file"),
     BOOK_COUNT_ERROR(-2, "Incorrect book count"),

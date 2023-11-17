@@ -9,6 +9,7 @@ import Utilities.Code;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 public class Library {
   /**
@@ -38,13 +39,88 @@ public class Library {
 
   public Library(String name) {
     this.name = name;
-    System.out.println("Not implemented all the way check");
+    //System.out.println("Not implemented all the way check");
   }
 
   public Code init(String filename) {
-
     System.out.println("Not implemented");
     return Code.NOT_IMPLEMENTED_ERROR;
+  }
+
+  private Code initBooks(int bookCount, Scanner scan)
+  {
+    Book book;
+    if(bookCount < 1)
+    {
+      return Code.LIBRARY_ERROR;
+    }
+    for (int i = 0; i < bookCount; i++)
+    {
+      String line = scan.nextLine().trim();
+      String[] words = line.split(",");
+      if(words.length < 6)
+      {
+        return Code.BOOK_RECORD_COUNT_ERROR;
+      }
+      if(convertInt(words[Book.PAGE_COUNT_],Code.PAGE_COUNT_ERROR) < 1)
+      {
+        return Code.PAGE_COUNT_ERROR;
+      }
+      if(convertDate(words[Book.DUE_DATE_],Code.SUCCESS).equals(null))
+      {
+        return Code.DATE_CONVERSION_ERROR;
+      }
+      book = new Book(words[Book.ISBN_],words[Book.TITLE_],words[Book.SUBJECT_],convertInt(words[Book.PAGE_COUNT_],Code.PAGE_COUNT_ERROR),words[Book.AUTHOR_],convertDate(words[Book.DUE_DATE_],Code.SUCCESS));
+      addBook(book);
+    }
+    return Code.SUCCESS;
+  }
+
+  private Code initShelves(int shelfCount, Scanner scan)
+  {
+    Shelf shelf;
+    if(shelfCount < 1)
+    {
+      return Code.SHELF_COUNT_ERROR;
+    }
+    for(int i = 0; i < shelfCount;i++) {
+      String line = scan.nextLine().trim();
+      String[] words = line.split(",");
+      if (words.length < 2) {
+        return Code.BOOK_RECORD_COUNT_ERROR;
+      }
+      if (convertInt(words[Shelf.SHELF_NUMBER_], Code.PAGE_COUNT_ERROR) < 1) {
+        return Code.SHELF_NUMBER_PARSE_ERROR;
+      } else {
+        shelf = new Shelf(convertInt(words[Shelf.SHELF_NUMBER_],Code.PAGE_COUNT_ERROR),words[Shelf.SUBJECT_]);
+        addShelf(shelf);
+      }
+    }
+    if(shelves.size()!=shelfCount)
+    {
+      System.out.println("Number of shelves doesn't match expected");
+      return Code.SHELF_NUMBER_PARSE_ERROR;
+    }
+    return Code.SUCCESS;
+  }
+
+  private Code initReader(int readerCount, Scanner scan)
+  {
+   if(readerCount < 1)
+   {
+     return Code.READER_COUNT_ERROR;
+   }
+   for(int i = 0; i < readerCount; i++)
+   {
+     String line = scan.nextLine().trim();
+     String[] words = line.split(",");
+     if(words.length < 5)
+     {
+       //return
+     }
+   }
+   System.out.println("Not implemented yet");
+   return Code.SUCCESS;
   }
 
   public Code addBook(Book newBook) {
@@ -56,9 +132,14 @@ public class Library {
       System.out.println(newBook.getTitle() + " added to the stacks");
 
     }
-    System.out.println("Not finished implementing");
-    return Code.SUCCESS;
-    //come back to after shelf
+    if(shelves.containsKey(newBook.getSubject()))
+    {
+      shelves.get(newBook.getSubject()).addBook(newBook);
+      return Code.SUCCESS;
+    } else {
+      System.out.println("No shelf for " + newBook.getSubject() + " books");
+      return Code.SHELF_EXISTS_ERROR;
+    }
   }
 
   public Code returnBook(Reader reader, Book book) {
@@ -367,5 +448,43 @@ public class Library {
     return Code.UNKNOWN_ERROR;
   }
 
+  public String getName() {
+    return name;
+  }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public static int getLibraryCard() {
+    return libraryCard;
+  }
+
+  public static void setLibraryCard(int libraryCard) {
+    Library.libraryCard = libraryCard;
+  }
+
+  public List<Reader> getReaders() {
+    return readers;
+  }
+
+  public void setReaders(List<Reader> readers) {
+    this.readers = readers;
+  }
+
+  public HashMap<String, Shelf> getShelves() {
+    return shelves;
+  }
+
+  public void setShelves(HashMap<String, Shelf> shelves) {
+    this.shelves = shelves;
+  }
+
+  public HashMap<Book, Integer> getBooks() {
+    return books;
+  }
+
+  public void setBooks(HashMap<Book, Integer> books) {
+    this.books = books;
+  }
 }

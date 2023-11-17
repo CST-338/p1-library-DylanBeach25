@@ -3,6 +3,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -12,6 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class LibraryTest {
 
     Library csumb = null;
+    Reader read = new Reader(1, "Jennifer Clinkenbeard", "831-555-6284");
+    Shelf shelf = new Shelf(1,"Adventure");
+    Book book = new Book("5297", "Count of Monte Cristo", "Adventure", 999, "Alexandrea Dumas", LocalDate.of(2021, 1, 1));
+    Book book2 = new Book("5297", "Count of Monte Cristo", "Sci-fi", 999, "Alexandrea Dumas", LocalDate.of(2021, 1, 1));
 
     String library00 = "Library00.csv";
     String library01 = "Library01.csv";
@@ -22,9 +28,13 @@ class LibraryTest {
     String badReader0 = "badReader0.csv";
     String badReader1 = "badReader1.csv";
 
+
     @BeforeEach
     void setUp() {
+        csumb= null;
+        assertNull(csumb);
         csumb = new Library("CSUMB");
+        assertNotNull(csumb);
     }
 
     @AfterEach
@@ -50,14 +60,33 @@ class LibraryTest {
 
     @Test
     void addBook() {
+        assertNotEquals(true,csumb.getBooks().containsKey(book));
+        csumb.addShelf(shelf);
+        assertEquals(Code.SUCCESS,csumb.addBook(book));
+        assertEquals(true,csumb.getBooks().containsKey(book));
+        assertEquals(Code.SHELF_EXISTS_ERROR,csumb.addBook(book2));
+
+
     }
 
     @Test
     void returnBook() {
+        assertEquals(Code.READER_DOESNT_HAVE_BOOK_ERROR, csumb.returnBook(read,book));
+        read.addBook(book);
+        assertEquals(Code.BOOK_NOT_IN_INVENTORY_ERROR,csumb.returnBook(read,book));
+        csumb.addBook(book);
+        csumb.addShelf(shelf);
+        assertEquals(Code.SUCCESS,csumb.returnBook(read,book));
     }
 
     @Test
     void testReturnBook() {
+        read.addBook(book);
+        csumb.addBook(book);
+        csumb.addShelf(shelf);
+        csumb.returnBook(book);
+        assertEquals(1,csumb.getBooks().get(book));
+
     }
 
     @Test
