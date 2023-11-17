@@ -6,6 +6,8 @@
 
 import Utilities.Code;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -43,8 +45,70 @@ public class Library {
   }
 
   public Code init(String filename) {
-    System.out.println("Not implemented");
-    return Code.NOT_IMPLEMENTED_ERROR;
+    Scanner scan = null;
+    Code book1;
+    Code shelf1;
+    Code reader1;
+    File f = new File(filename);
+    try{
+      scan = new Scanner(f);
+    } catch (FileNotFoundException e)
+    {
+      return Code.FILE_NOT_FOUND_ERROR;
+    }
+    int bookParse = convertInt(scan.nextLine().trim(),Code.PAGE_COUNT_ERROR);
+    if(bookParse < 0)
+    {
+      for(Code code: Code.values())
+      {
+        if(code.getCode()==bookParse)
+        {
+          return code;
+        }
+      }
+      return Code.UNKNOWN_ERROR;
+    }
+    book1 = initBooks(bookParse,scan);
+    listBooks();
+    int shelvesParse = convertInt(scan.nextLine().trim(),Code.PAGE_COUNT_ERROR);
+    if(shelvesParse < 0)
+    {
+      for(Code code: Code.values())
+      {
+        if(code.getCode()==shelvesParse)
+        {
+          return code;
+        }
+      }
+      return Code.UNKNOWN_ERROR;
+    }
+    shelf1 = initShelves(shelvesParse,scan);
+    listShelves();
+    int readerParse = convertInt(scan.nextLine().trim(),Code.PAGE_COUNT_ERROR);
+    if(readerParse < 0)
+    {
+      for(Code code: Code.values())
+      {
+        if(code.getCode()==readerParse)
+        {
+          return code;
+        }
+      }
+      return Code.UNKNOWN_ERROR;
+    }
+    reader1 = initReader(readerParse,scan);
+    listReaders();
+
+    if(!book1.equals(Code.SUCCESS))
+    {
+      return book1;
+    } else if(!shelf1.equals((Code.SUCCESS))) {
+      return shelf1;
+    } else if(!reader1.equals(Code.SUCCESS)) {
+      return reader1;
+    } else {
+      return Code.SUCCESS;
+    }
   }
 
   private Code initBooks(int bookCount, Scanner scan)
@@ -106,6 +170,7 @@ public class Library {
 
   private Code initReader(int readerCount, Scanner scan)
   {
+    Reader read;
    if(readerCount < 1)
    {
      return Code.READER_COUNT_ERROR;
@@ -114,9 +179,28 @@ public class Library {
    {
      String line = scan.nextLine().trim();
      String[] words = line.split(",");
+     int indexHolder;
      if(words.length < 5)
      {
-       //return
+       return Code.BOOK_RECORD_COUNT_ERROR;
+     }
+     if(convertInt(words[Reader.CARD_NUMBER_], Code.PAGE_COUNT_ERROR) < 1)
+     {
+       return Code.READER_CARD_NUMBER_ERROR;
+     }
+     read = new Reader(convertInt(words[Reader.CARD_NUMBER_],Code.PAGE_COUNT_ERROR),words[Reader.NAME_],words[Reader.PHONE_]);
+     addReader(read);
+     indexHolder = convertInt(words[Reader.BOOK_START_],Code.PAGE_COUNT_ERROR);
+     //needs to multiply by 2 since each book has a due date and title
+     for(int j = 0; j < 2*convertInt(words[Reader.BOOK_COUNT_],Code.PAGE_COUNT_ERROR);j++);
+     {
+       if(getBookByISBN(read.getBooks().get(indexHolder).getISBN()).equals(null))
+       {
+         System.out.println("Error");
+       } else {
+         checkoutBook(read,getBookByISBN(read.getBooks().get(indexHolder).getISBN()));
+       }
+       indexHolder = indexHolder + 2;
      }
    }
    System.out.println("Not implemented yet");
