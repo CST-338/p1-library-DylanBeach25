@@ -199,6 +199,12 @@ public class Library {
      //needs to multiply by 2 since each book has a due date and title
      for(int j = 0; j < convertInt(words[Reader.BOOK_COUNT_],Code.PAGE_COUNT_ERROR);j++)
      {
+       //this is for the case in Library01, where a book count of 2 is provided, but with only one book
+       if(words.length-(2*(convertInt(words[Reader.BOOK_COUNT_],Code.PAGE_COUNT_ERROR))) < 4)
+       {
+         System.out.println("Not enough books provided for book count");
+         break;
+       }
        //System.out.println(Reader.BOOK_START_);
        //System.out.println(indexHolder);
        if(getBookByISBN(words[indexHolder])==null)
