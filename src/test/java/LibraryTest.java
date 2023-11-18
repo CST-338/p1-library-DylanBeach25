@@ -17,7 +17,7 @@ class LibraryTest {
     Reader read = new Reader(1, "Jennifer Clinkenbeard", "831-555-6284");
     Shelf shelf = new Shelf(1,"Adventure");
     Book book = new Book("5297", "Count of Monte Cristo", "Adventure", 999, "Alexandrea Dumas", LocalDate.of(2021, 1, 1));
-    Book book2 = new Book("5297", "Count of Monte Cristo", "Sci-fi", 999, "Alexandrea Dumas", LocalDate.of(2021, 1, 1));
+    Book book2 = new Book("5296", "Count of Monte Cristo", "Sci-fi", 999, "Alexandrea Dumas", LocalDate.of(2021, 1, 1));
 
     String library00 = "Library00.csv";
     String library01 = "Library01.csv";
@@ -56,6 +56,10 @@ class LibraryTest {
 
     @Test
     void init_goodFile_test() {
+        assertEquals(Code.SUCCESS,csumb.init(library00));
+        assertNotEquals(true, csumb.getBooks().containsKey(book));
+        csumb.addBook(book);
+        assertEquals(true, csumb.getBooks().containsKey(book));
     }
 
     @Test
@@ -65,6 +69,8 @@ class LibraryTest {
         assertEquals(Code.SUCCESS,csumb.addBook(book));
         assertEquals(true,csumb.getBooks().containsKey(book));
         assertEquals(Code.SHELF_EXISTS_ERROR,csumb.addBook(book2));
+        //this last test ensures that 2 copies of the same book can be added increasing their count
+        assertEquals(Code.SUCCESS,csumb.addBook(book));
 
 
     }
@@ -92,6 +98,11 @@ class LibraryTest {
 
     @Test
     void listBooks() {
+        csumb.addBook(book);
+        csumb.addShelf("Sci-fi");
+        csumb.addBook(book2);
+        csumb.addBook(book2);
+        assertEquals(3,csumb.listBooks());
     }
 
     @Test
@@ -100,6 +111,10 @@ class LibraryTest {
 
     @Test
     void getBookByISBN() {
+        assertEquals(null,csumb.getBookByISBN("5297"));
+        csumb.addShelf(shelf);
+        csumb.addBook(book);
+        assertEquals(book,csumb.getBookByISBN("5297"));
     }
 
     @Test

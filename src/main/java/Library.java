@@ -9,6 +9,7 @@ import Utilities.Code;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -29,9 +30,9 @@ public class Library {
   /**
    * This list holds a list of readers registered to the library
    */
-  private List<Reader> readers;
+  private List<Reader> readers = new ArrayList<>();
   /**
-   * This Hashmap takes in a STting representing a subject, and pairs it with a shelf object
+   * This Hashmap takes in a String representing a subject, and pairs it with a shelf object
    */
   private HashMap<String, Shelf> shelves = new HashMap<>();
   /**
@@ -56,7 +57,8 @@ public class Library {
     {
       return Code.FILE_NOT_FOUND_ERROR;
     }
-    int bookParse = convertInt(scan.nextLine().trim(),Code.PAGE_COUNT_ERROR);
+    //This is incorrect, it needs to know what error to take into the convertInt
+    int bookParse = convertInt(scan.nextLine().trim(),Code.BOOK_COUNT_ERROR);
     if(bookParse < 0)
     {
       for(Code code: Code.values())
@@ -171,6 +173,7 @@ public class Library {
   private Code initReader(int readerCount, Scanner scan)
   {
     Reader read;
+    int indexHolder;
    if(readerCount < 1)
    {
      return Code.READER_COUNT_ERROR;
@@ -179,7 +182,7 @@ public class Library {
    {
      String line = scan.nextLine().trim();
      String[] words = line.split(",");
-     int indexHolder;
+     Book checkoutBook;
      if(words.length < 5)
      {
        return Code.BOOK_RECORD_COUNT_ERROR;
@@ -190,35 +193,38 @@ public class Library {
      }
      read = new Reader(convertInt(words[Reader.CARD_NUMBER_],Code.PAGE_COUNT_ERROR),words[Reader.NAME_],words[Reader.PHONE_]);
      addReader(read);
-     indexHolder = convertInt(words[Reader.BOOK_START_],Code.PAGE_COUNT_ERROR);
+     indexHolder = Reader.BOOK_START_;
      //needs to multiply by 2 since each book has a due date and title
-     for(int j = 0; j < 2*convertInt(words[Reader.BOOK_COUNT_],Code.PAGE_COUNT_ERROR);j++);
+     for(int j = 0; j < convertInt(words[Reader.BOOK_COUNT_],Code.PAGE_COUNT_ERROR);j++);
      {
-       if(getBookByISBN(read.getBooks().get(indexHolder).getISBN()).equals(null))
+       System.out.println(Reader.BOOK_START_);
+       System.out.println(indexHolder);
+       if(getBookByISBN(words[indexHolder]).equals(null))
        {
          System.out.println("Error");
        } else {
-         checkoutBook(read,getBookByISBN(read.getBooks().get(indexHolder).getISBN()));
+         Book foundBook = getBookByISBN(words[indexHolder]);
+        checkoutBook = new Book(foundBook.getISBN(),foundBook.getTitle(), foundBook.getSubject(), foundBook.getPageCount(), foundBook.getAuthor(),convertDate(words[indexHolder+1],Code.SUCCESS));
+         checkoutBook(read,checkoutBook);
        }
        indexHolder = indexHolder + 2;
      }
    }
-   System.out.println("Not implemented yet");
    return Code.SUCCESS;
   }
 
   public Code addBook(Book newBook) {
     if (books.containsKey(newBook)) {
       books.put(newBook, books.get(newBook) + 1);
-      System.out.println(books.get(newBook) + "copies of " + newBook.getTitle() + " in the stacks");
+      System.out.println(books.get(newBook) + " copies of " + newBook.getTitle() + " in the stacks");
     } else {
       books.put(newBook, 1);
       System.out.println(newBook.getTitle() + " added to the stacks");
-
     }
     if(shelves.containsKey(newBook.getSubject()))
     {
       shelves.get(newBook.getSubject()).addBook(newBook);
+      books.put(newBook,books.get(newBook) - 1);
       return Code.SUCCESS;
     } else {
       System.out.println("No shelf for " + newBook.getSubject() + " books");
@@ -281,11 +287,19 @@ public class Library {
     for (String s : shelves.keySet()) {
       for (Book b : shelves.get(s).getBooks().keySet()) {
         bookTotal = bookTotal + shelves.get(s).getBookCount(b);
+        if(shelves.get(s).getBookCount(b)>0) {
+          System.out.println(shelves.get(s).getBookCount(b) + " copies of " + b.getTitle() + " by " + b.getAuthor() + " ISBN: " + b.getISBN());
+        }
       }
-      shelves.get(s).listBooks();
+      //shelves.get(s).listBooks();
     }
     for (Book b : books.keySet()) {
-      System.out.println("Not implemented yet");
+      bookTotal = bookTotal + books.get(b);
+      if(books.get(b)>0) {
+        System.out.println(books.get(b) + " copies of " + b.getTitle() + " by " + b.getAuthor() + " ISBN: " + b.getISBN());
+      }
+      //System.out.println("Not implemented yet");
+      //books.get(b)
     }
     //System.out.println("Not yet implemented");
     return bookTotal;
@@ -469,7 +483,7 @@ public class Library {
   public static int convertInt(String recordCountString, Code code) {
     int convertedString;
     try {
-      convertedString = Integer.parseInt(recordCountString);
+      convertedString = Integer.parseInt(recordCountString.trim());
     } catch (NumberFormatException e) {
       if (code.equals(Code.BOOK_COUNT_ERROR)) {
         System.out.println("Value which caused the error: " + recordCountString);
