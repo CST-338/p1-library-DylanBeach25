@@ -132,7 +132,7 @@ public class Library {
       {
         return Code.PAGE_COUNT_ERROR;
       }
-      if(convertDate(words[Book.DUE_DATE_],Code.SUCCESS).equals(null))
+      if(convertDate(words[Book.DUE_DATE_],Code.SUCCESS)==null)
       {
         return Code.DATE_CONVERSION_ERROR;
       }
@@ -174,6 +174,8 @@ public class Library {
   {
     Reader read;
     int indexHolder;
+    Book checkoutBook;
+    Book foundBook;
    if(readerCount < 1)
    {
      return Code.READER_COUNT_ERROR;
@@ -182,7 +184,7 @@ public class Library {
    {
      String line = scan.nextLine().trim();
      String[] words = line.split(",");
-     Book checkoutBook;
+
      if(words.length < 5)
      {
        return Code.BOOK_RECORD_COUNT_ERROR;
@@ -195,16 +197,16 @@ public class Library {
      addReader(read);
      indexHolder = Reader.BOOK_START_;
      //needs to multiply by 2 since each book has a due date and title
-     for(int j = 0; j < convertInt(words[Reader.BOOK_COUNT_],Code.PAGE_COUNT_ERROR);j++);
+     for(int j = 0; j < convertInt(words[Reader.BOOK_COUNT_],Code.PAGE_COUNT_ERROR);j++)
      {
-       System.out.println(Reader.BOOK_START_);
-       System.out.println(indexHolder);
-       if(getBookByISBN(words[indexHolder]).equals(null))
+       //System.out.println(Reader.BOOK_START_);
+       //System.out.println(indexHolder);
+       if(getBookByISBN(words[indexHolder])==null)
        {
          System.out.println("Error");
        } else {
-         Book foundBook = getBookByISBN(words[indexHolder]);
-        checkoutBook = new Book(foundBook.getISBN(),foundBook.getTitle(), foundBook.getSubject(), foundBook.getPageCount(), foundBook.getAuthor(),convertDate(words[indexHolder+1],Code.SUCCESS));
+         foundBook = getBookByISBN(words[indexHolder]);
+         checkoutBook = new Book(foundBook.getISBN(),foundBook.getTitle(), foundBook.getSubject(), foundBook.getPageCount(), foundBook.getAuthor(),convertDate(words[indexHolder+1],Code.SUCCESS));
          checkoutBook(read,checkoutBook);
        }
        indexHolder = indexHolder + 2;
@@ -224,7 +226,8 @@ public class Library {
     if(shelves.containsKey(newBook.getSubject()))
     {
       shelves.get(newBook.getSubject()).addBook(newBook);
-      books.put(newBook,books.get(newBook) - 1);
+      //this was an earlier test
+      //books.put(newBook,books.get(newBook) - 1);
       return Code.SUCCESS;
     } else {
       System.out.println("No shelf for " + newBook.getSubject() + " books");
@@ -284,15 +287,18 @@ public class Library {
 
   public int listBooks() {
     int bookTotal = 0;
-    for (String s : shelves.keySet()) {
-      for (Book b : shelves.get(s).getBooks().keySet()) {
-        bookTotal = bookTotal + shelves.get(s).getBookCount(b);
-        if(shelves.get(s).getBookCount(b)>0) {
-          System.out.println(shelves.get(s).getBookCount(b) + " copies of " + b.getTitle() + " by " + b.getAuthor() + " ISBN: " + b.getISBN());
-        }
-      }
+   // for (String s : shelves.keySet()) {
+     // for (Book b : shelves.get(s).getBooks().keySet()) {
+       // bookTotal = bookTotal + shelves.get(s).getBookCount(b);
+        //if(shelves.get(s).getBookCount(b)>0) {
+         // System.out.println(shelves.get(s).getBookCount(b) + " copies of " + b.getTitle() + " by " + b.getAuthor() + " ISBN: " + b.getISBN());
+        //}
+      //}
       //shelves.get(s).listBooks();
-    }
+
+    //}
+    //test here
+   // System.out.println("Shelves done");
     for (Book b : books.keySet()) {
       bookTotal = bookTotal + books.get(b);
       if(books.get(b)>0) {
@@ -332,9 +338,12 @@ public class Library {
       System.out.println("Couldn't checkout " + book);
       return holder;
     }
+    System.out.println(shelves.get(book.getSubject()).getBookCount(book));
     Code holder2 = shelves.get(book.getSubject()).removeBook(book);
     if (holder2.equals(Code.SUCCESS)) {
       System.out.println(book + " checked out successfully");
+      //test below
+      System.out.println("Book: " + book.getTitle() + " " + shelves.get(book.getSubject()).getBookCount(book)+ " remaining");
     }
     return holder2;
   }
@@ -383,9 +392,18 @@ public class Library {
     shelf.setShelfNumber(shelves.size() + 1);
     shelves.put(shelf.getSubject(), shelf);
     for (Book b : books.keySet()) {
-      if (b.getSubject().equals(shelves.get(shelf.getSubject()).getSubject())) {
-        shelves.get(shelf.getSubject()).addBook(b);
+      //if (b.getSubject().equals(shelves.get(shelf.getSubject()).getSubject())) {
+      if(b.getSubject().equals(shelf.getSubject())) {
+        //for loop was added for test
+        for (int j = 0; j < books.get(b); j++) {
+          shelves.get(shelf.getSubject()).addBook(b);
+          //this is a test
+          //System.out.println("J value for add shelf: " + j);
+
+          //books.put(b,books.get(b)-1);
+        }
       }
+
     }
     return Code.SUCCESS;
   }

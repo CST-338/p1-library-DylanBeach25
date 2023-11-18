@@ -58,8 +58,9 @@ class LibraryTest {
     void init_goodFile_test() {
         assertEquals(Code.SUCCESS,csumb.init(library00));
         assertNotEquals(true, csumb.getBooks().containsKey(book));
-        csumb.addBook(book);
-        assertEquals(true, csumb.getBooks().containsKey(book));
+        //csumb.addBook(book);
+        //assertEquals(true, csumb.getBooks().containsKey(book));
+        assertEquals(9,csumb.listBooks());
     }
 
     @Test
@@ -99,10 +100,12 @@ class LibraryTest {
     @Test
     void listBooks() {
         csumb.addBook(book);
+        //csumb.addShelf("Sci-fi");
+        csumb.addBook(book2);
+        csumb.addBook(book2);
         csumb.addShelf("Sci-fi");
-        csumb.addBook(book2);
-        csumb.addBook(book2);
         assertEquals(3,csumb.listBooks());
+
     }
 
     @Test
