@@ -15,9 +15,12 @@ class LibraryTest {
 
     Library csumb = null;
     Reader read = new Reader(1, "Jennifer Clinkenbeard", "831-555-6284");
+    Reader read2 = new Reader (2,"Dylan Beach","123-456-7890");
+    Reader read3 = new Reader (2, "Noah Weatherbie", "111-111-1111");
     Shelf shelf = new Shelf(1,"Adventure");
     Book book = new Book("5297", "Count of Monte Cristo", "Adventure", 999, "Alexandrea Dumas", LocalDate.of(2021, 1, 1));
     Book book2 = new Book("5296", "Count of Monte Cristo", "Sci-fi", 999, "Alexandrea Dumas", LocalDate.of(2021, 1, 1));
+    Book book3 = new Book("1111","Coding Adventure","Sci-fi",100,"Dylan Beach",LocalDate.of(2023,1,1));
 
     String library00 = "Library00.csv";
     String library01 = "Library01.csv";
@@ -89,11 +92,15 @@ class LibraryTest {
     @Test
     void testReturnBook() {
         read.addBook(book);
+        read.addBook(book3);
+        assertEquals(true,read.getBooks().contains(book));
         csumb.addBook(book);
         csumb.addShelf(shelf);
-        csumb.returnBook(book);
+        csumb.returnBook(read,book);
         assertEquals(1,csumb.getBooks().get(book));
-        //not finished yet
+        assertEquals(false,read.getBooks().contains(book));
+        assertEquals(Code.READER_DOESNT_HAVE_BOOK_ERROR,csumb.returnBook(read,book2));
+        assertEquals(Code.BOOK_NOT_IN_INVENTORY_ERROR,csumb.returnBook(read,book3));
 
     }
 
@@ -110,6 +117,17 @@ class LibraryTest {
 
     @Test
     void checkOutBook() {
+        assertEquals(Code.READER_NOT_IN_LIBRARY_ERROR,csumb.checkoutBook(read,book));
+        csumb.addReader(read);
+        assertEquals(Code.BOOK_NOT_IN_INVENTORY_ERROR,csumb.checkoutBook(read,book));
+        csumb.addBook(book);
+        assertEquals(Code.SHELF_EXISTS_ERROR,csumb.checkoutBook(read,book));
+        csumb.addShelf("Adventure");
+        assertEquals(Code.SUCCESS,csumb.checkoutBook(read,book));
+        assertEquals(Code.BOOK_NOT_IN_INVENTORY_ERROR,csumb.checkoutBook(read,book));
+        csumb.addBook(book);
+        //checks to make sure they can't check the same book out twice
+        assertNotEquals(Code.SUCCESS,csumb.checkoutBook(read,book));
     }
 
     @Test
@@ -126,34 +144,84 @@ class LibraryTest {
 
     @Test
     void addShelf() {
+        //Shelf being added
+        assertNotEquals(true,csumb.getShelves().containsKey(shelf.getSubject()));
+        csumb.addShelf(shelf);
+        assertEquals(true,csumb.getShelves().containsKey(shelf.getSubject()));
     }
 
     @Test
     void testAddShelf() {
+        csumb.addBook(book);
+        assertEquals(Code.SUCCESS,csumb.addShelf(shelf));
+        assertEquals(true, csumb.getShelves().get(shelf.getSubject()).getBooks().containsKey(book));
+        assertEquals(Code.SHELF_EXISTS_ERROR,csumb.addShelf(shelf));
+        csumb.addShelf("Mystery");
+        assertEquals(true, csumb.getShelves().containsKey("Mystery"));
     }
 
     @Test
     void getShelf() {
+        csumb.addShelf(shelf);
+        csumb.addShelf("Mystery");
+        assertEquals(csumb.getShelves().get(shelf.getSubject()),csumb.getShelf(1));
+        assertEquals(csumb.getShelves().get("Mystery"),csumb.getShelf(2));
+        assertEquals(null,csumb.getShelf(3));
+
     }
 
     @Test
     void testGetShelf() {
+        csumb.addShelf("Mystery");
+        assertEquals(csumb.getShelves().get("Mystery"), csumb.getShelf("Mystery"));
+        assertEquals(null,csumb.getShelf("Sci-fi"));
     }
 
     @Test
     void listReaders() {
+        csumb.addReader(read);
+        csumb.addReader(read2);
+        assertEquals(2,csumb.listReaders());
+        csumb.removeReader(read2);
+        assertEquals(1,csumb.listReaders());
+
     }
 
     @Test
     void testListReaders() {
+        csumb.addReader(read);
+        read.addBook(book);
+        assertEquals(1, csumb.listReaders(true));
+        //check to make sure the book is listed in the sout of this statement
+        System.out.println("Break");
+        read.addBook(book2);
+        assertEquals(1, csumb.listReaders(true));
+        System.out.println("Break");
+        //ensures the sout is adding the book I just added
+        assertEquals(1, csumb.listReaders(false));
+        System.out.println("Break");
+        //make sure nothing is printed with this statement
+
     }
 
     @Test
     void getReaderByCard() {
+        assertEquals(null,csumb.getReaderByCard(4));
+        csumb.addReader(read);
+        csumb.addReader(read2);
+        assertEquals(read2,csumb.getReaderByCard(2));
     }
 
     @Test
     void addReader() {
+        csumb.addReader(read2);
+        assertEquals(Code.READER_ALREADY_EXISTS_ERROR,csumb.addReader(read2));
+        assertEquals(Code.READER_CARD_NUMBER_ERROR,csumb.addReader(read3));
+        assertEquals(Code.SUCCESS,csumb.addReader(read));
+        assertEquals(true,csumb.getReaders().contains(read2));
+        assertEquals(true,csumb.getReaders().contains(read));
+        assertEquals(2,csumb.listReaders(false));
+
     }
 
     @Test
