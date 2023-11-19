@@ -226,6 +226,12 @@ class LibraryTest {
 
     @Test
     void removeReader() {
+     assertEquals(Code.READER_NOT_IN_LIBRARY_ERROR,csumb.removeReader(read3));
+        csumb.addReader(read3);
+     read3.addBook(book);
+     assertEquals(Code.READER_STILL_HAS_BOOKS_ERROR,csumb.removeReader(read3));
+     read3.removeBook(book);
+     assertEquals(Code.SUCCESS,csumb.removeReader(read3));
     }
 
     @Test
@@ -238,5 +244,8 @@ class LibraryTest {
 
     @Test
     void getLibraryCardNumber() {
+        assertEquals(1,csumb.getLibraryCardNumber());
+        csumb.addReader(read);
+        assertEquals(2,csumb.getLibraryCardNumber());
     }
 }

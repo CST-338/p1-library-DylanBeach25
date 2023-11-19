@@ -577,11 +577,6 @@ public class Library {
   public void setName(String name) {
     this.name = name;
   }
-
-  public static int getLibraryCard() {
-    return libraryCard;
-  }
-
   public static void setLibraryCard(int libraryCard) {
     Library.libraryCard = libraryCard;
   }
