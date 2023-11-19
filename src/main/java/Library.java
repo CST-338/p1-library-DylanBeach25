@@ -365,7 +365,6 @@ public class Library {
   }
 
   public int listShelves() {
-    //listShelves(boolean) not yet implemented
     return listShelves(false);
   }
 
@@ -373,7 +372,8 @@ public class Library {
     int shelfCounter = 0;
     if (showbooks) {
       for (String s : shelves.keySet()) {
-        shelves.get(s).listBooks();
+        //System.out.println("Books in shelf " + s);
+        System.out.println(shelves.get(s).listBooks());
         shelfCounter = shelfCounter + 1;
       }
     } else {
@@ -543,6 +543,7 @@ public class Library {
     }
     if(words[0].length() < 0 || words[1].length()<0 || words[2].length()<0)
     {
+      //Perhaps fix this
       System.out.println("Error converting date: Year " + words[0]);
       System.out.println("Error converting date: Month " + words[1]);
       System.out.println("Error converting date: Day " + words[2]);

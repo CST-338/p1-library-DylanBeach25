@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -140,6 +141,14 @@ class LibraryTest {
 
     @Test
     void listShelves() {
+       csumb.addShelf("Sci-fi");
+       csumb.addShelf("Adventure");
+       assertEquals(2,csumb.listShelves(false));
+       System.out.println("Break");
+       csumb.addBook(book);
+       csumb.addBook(book2);
+       assertEquals(true,csumb.getShelves().get("Sci-fi").getBooks().containsKey(book2));
+       assertEquals(2,csumb.listShelves(true));
     }
 
     @Test
@@ -236,10 +245,22 @@ class LibraryTest {
 
     @Test
     void convertInt() {
+        assertEquals(12, csumb.convertInt("12",Code.SUCCESS));
+        assertEquals(-2,csumb.convertInt("h",Code.BOOK_COUNT_ERROR));
+        assertEquals(-8,csumb.convertInt("h",Code.PAGE_COUNT_ERROR));
+        assertEquals(-101,csumb.convertInt("h",Code.DATE_CONVERSION_ERROR));
+        assertEquals(-999,csumb.convertInt("h",Code.DUE_DATE_ERROR));
+
     }
 
     @Test
     void convertDate() {
+        LocalDate base = LocalDate.of(1970, Month.JANUARY,1);
+        LocalDate workingDate = LocalDate.of(2023,Month.NOVEMBER,19);
+        assertEquals(base,csumb.convertDate("2040-11-24-12",Code.SUCCESS));
+        assertEquals(base,csumb.convertDate("11-10",Code.SUCCESS));
+        assertEquals(workingDate,csumb.convertDate("2023-11-19",Code.SUCCESS));
+
     }
 
     @Test

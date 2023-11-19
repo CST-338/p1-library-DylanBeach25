@@ -175,7 +175,6 @@ public class Shelf {
             {
                 list.append("\n" + book.toString() + " " + books.get(book));
             }
-
             return list.toString();
         } else {
             list.append(bookCount + " book on shelf: " + this.toString());
