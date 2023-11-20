@@ -120,6 +120,8 @@ public class Shelf {
                 return Code.SUCCESS;
             } else {
                 books.put(book, 1);
+                //test
+                System.out.println(book.toString() + " added to shelf " + this.toString());
                 return Code.SUCCESS;
             }
         } else {
