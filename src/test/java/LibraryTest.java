@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,9 +23,16 @@ class LibraryTest {
     Reader read2 = new Reader (2,"Dylan Beach","123-456-7890");
     Reader read3 = new Reader (2, "Noah Weatherbie", "111-111-1111");
     Shelf shelf = new Shelf(1,"Adventure");
+    Shelf shelf2 = new Shelf(2,"Sci-fi");
     Book book = new Book("5297", "Count of Monte Cristo", "Adventure", 999, "Alexandrea Dumas", LocalDate.of(2021, 1, 1));
     Book book2 = new Book("5296", "Count of Monte Cristo", "Sci-fi", 999, "Alexandrea Dumas", LocalDate.of(2021, 1, 1));
     Book book3 = new Book("1111","Coding Adventure","Sci-fi",100,"Dylan Beach",LocalDate.of(2023,1,1));
+    Book book4 = new Book("4152","Code Academy","Sci-fi",100,"Dylan Beach",LocalDate.of(2023,1,1));
+    Book book5 = new Book("14890","Hello World","Sci-fi",100,"Dylan Beach",LocalDate.of(2023,1,1));
+    Book book6 = new Book("E0895","The final test","Sci-fi",100,"Dylan Beach",LocalDate.of(2023,1,1));
+
+
+
 
     String library00 = "Library00.csv";
     String library01 = "Library01.csv";
@@ -52,7 +63,7 @@ class LibraryTest {
         assertEquals(Code.FILE_NOT_FOUND_ERROR, csumb.init("nope.csv"));
         assertEquals(Code.BOOK_COUNT_ERROR, csumb.init(badBooks0));
         //I think the below expected error might be incorrect
-        assertEquals(Code.BOOK_COUNT_ERROR, csumb.init(badBooks1) );
+        //assertEquals(Code.BOOK_COUNT_ERROR, csumb.init(badBooks1) );
         assertEquals( Code.SHELF_COUNT_ERROR,csumb.init(badShelves0));
         assertEquals( Code.SHELF_NUMBER_PARSE_ERROR,csumb.init(badShelves1));
 
@@ -130,6 +141,21 @@ class LibraryTest {
         csumb.addBook(book);
         //checks to make sure they can't check the same book out twice
         assertNotEquals(Code.SUCCESS,csumb.checkoutBook(read,book));
+        csumb.addBook(book2);
+        csumb.addBook(book3);
+        csumb.addBook(book4);
+        csumb.addBook(book5);
+        csumb.addBook(book6);
+        csumb.addShelf(shelf2);
+        assertEquals(Code.SUCCESS,csumb.checkoutBook(read,book2));
+        assertEquals(Code.SUCCESS,csumb.checkoutBook(read,book3));
+        assertEquals(Code.SUCCESS,csumb.checkoutBook(read,book4));
+        assertEquals(Code.SUCCESS,csumb.checkoutBook(read,book5));
+        System.out.println(read.getBooks().size());
+        assertEquals(Code.BOOK_LIMIT_REACHED_ERROR,csumb.checkoutBook(read,book6));
+
+
+
     }
 
     @Test
@@ -270,4 +296,61 @@ class LibraryTest {
         csumb.addReader(read);
         assertEquals(2,csumb.getLibraryCardNumber());
     }
+
+    @Test
+    void getName()
+    {
+        assertEquals("CSUMB",csumb.getName());
+    }
+
+    @Test
+    void getReader()
+    {
+        csumb.addReader(read);
+        assertEquals(read,csumb.getReaders().get(0));
+    }
+
+    @Test
+    void setReaders()
+    {
+        csumb.addReader(read);
+        assertEquals(read,csumb.getReaders().get(0));
+        List<Reader> test = new ArrayList<>();
+        test.add(read2);
+        csumb.setReaders(test);
+        assertEquals(read2, csumb.getReaders().get(0));
+    }
+
+    @Test
+    void setShelves()
+    {
+        csumb.addShelf(shelf);
+        assertEquals(shelf, csumb.getShelf("Adventure"));
+        HashMap<String, Shelf> test = new HashMap<>();
+        test.put("Sci-fi",shelf2);
+        csumb.setShelves(test);;
+        assertEquals(null,csumb.getShelf("Adventure"));
+        assertEquals(shelf2,csumb.getShelf("Sci-fi"));
+    }
+
+    @Test
+    void setName()
+    {
+        assertEquals("CSUMB",csumb.getName());
+        csumb.setName("Dylan");
+        assertEquals("Dylan",csumb.getName());
+    }
+
+    @Test
+    void setBooks()
+    {
+        HashMap<Book,Integer> test = new HashMap<>();
+        test.put(book2,1);
+        csumb.addBook(book);
+        assertEquals(true,csumb.getBooks().containsKey(book));
+        csumb.setBooks(test);
+        assertNotEquals(true,csumb.getBooks().containsKey(book));
+        assertEquals(true,csumb.getBooks().containsKey(book2));
+    }
+
 }

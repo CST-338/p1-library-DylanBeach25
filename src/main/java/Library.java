@@ -416,7 +416,7 @@ public class Library {
       System.out.println(reader.getName() + " doesn't have an account here");
       return Code.READER_NOT_IN_LIBRARY_ERROR;
     }
-    if (reader.getBooks().size() > LENDING_LIMIT) {
+    if (reader.getBooks().size() >= LENDING_LIMIT) {
       System.out.println(reader.getName() + " has reached the lending limit, " + LENDING_LIMIT);
       return Code.BOOK_LIMIT_REACHED_ERROR;
     }
@@ -793,9 +793,6 @@ public class Library {
 
   public void setName(String name) {
     this.name = name;
-  }
-  public static void setLibraryCard(int libraryCard) {
-    Library.libraryCard = libraryCard;
   }
 
   public List<Reader> getReaders() {
