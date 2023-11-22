@@ -51,6 +51,7 @@ class LibraryTest {
         //Bad file
         assertEquals(Code.FILE_NOT_FOUND_ERROR, csumb.init("nope.csv"));
         assertEquals(Code.BOOK_COUNT_ERROR, csumb.init(badBooks0));
+        //I think the below expected error might be incorrect
         assertEquals(Code.BOOK_COUNT_ERROR, csumb.init(badBooks1) );
         assertEquals( Code.SHELF_COUNT_ERROR,csumb.init(badShelves0));
         assertEquals( Code.SHELF_NUMBER_PARSE_ERROR,csumb.init(badShelves1));
